@@ -20,7 +20,7 @@ Phase 1 establishes the data infrastructure and foundational models for your Bas
 
 ```bash
 # Clone repository
-git clone https://github.com/yourusername/baseball_manager_ai.git
+git clone https://github.com/seanrugg/baseball_manager_ai.git
 cd baseball_manager_ai
 
 # Create virtual environment
