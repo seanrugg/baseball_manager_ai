@@ -1,0 +1,103 @@
+baseball_manager_ai/
+│
+├── .github/
+│   ├── workflows/
+│   │   ├── ci.yml
+│   │   ├── model-training.yml
+│   │   └── license-check.yml
+│   └── ISSUE_TEMPLATE/
+│       ├── feature_request.md
+│       └── bug_report.md
+│
+├── data/
+│   ├── raw/
+│   │   ├── statcast/
+│   │   ├── retrosheet/
+│   │   └── manual_annotations/
+│   ├── processed/
+│   │   ├── training_examples/
+│   │   ├── feature_sets/
+│   │   └── embeddings/
+│   └── external/
+│       ├── mlb_statsapi/
+│       └── baseball_reference/
+│
+├── baseball_manager_ai/  # Main package
+│   ├── __init__.py
+│   ├── data_processing/
+│   │   ├── __init__.py
+│   │   ├── statcast_loader.py
+│   │   ├── retrosheet_parser.py
+│   │   ├── feature_engineering.py
+│   │   └── data_validation.py
+│   │
+│   ├── models/
+│   │   ├── __init__.py
+│   │   ├── base_manager.py
+│   │   ├── lineup_optimizer.py
+│   │   ├── in_game_decider.py
+│   │   ├── pitching_manager.py
+│   │   └── ensemble.py
+│   │
+│   ├── simulation/
+│   │   ├── __init__.py
+│   │   ├── game_simulator.py
+│   │   ├── decision_evaluator.py
+│   │   └── monte_carlo.py
+│   │
+│   ├── utils/
+│   │   ├── __init__.py
+│   │   ├── baseball_constants.py
+│   │   ├── win_probability.py
+│   │   ├── run_expectancy.py
+│   │   └── visualization.py
+│   │
+│   └── api/
+│       ├── __init__.py
+│       ├── model_server.py
+│       ├── data_ingestion.py
+│       └── web_dashboard.py
+│
+├── notebooks/
+│   ├── 01_data_exploration.ipynb
+│   ├── 02_feature_engineering.ipynb
+│   ├── 03_model_training.ipynb
+│   ├── 04_strategy_analysis.ipynb
+│   └── 05_simulation_evaluation.ipynb
+│
+├── tests/
+│   ├── __init__.py
+│   ├── test_data_processing.py
+│   ├── test_models.py
+│   ├── test_simulation.py
+│   └── test_integration.py
+│
+├── config/
+│   ├── model_config.yaml
+│   ├── training_config.yaml
+│   ├── simulation_config.yaml
+│   └── data_sources.yaml
+│
+├── docs/
+│   ├── data_sources.md
+│   ├── model_architecture.md
+│   ├── api_reference.md
+│   └── deployment_guide.md
+│
+├── scripts/
+│   ├── download_data.py
+│   ├── train_model.py
+│   ├── run_simulation.py
+│   └── deploy_model.py
+│
+├── models/ (gitignored - for trained model binaries)
+├── logs/ (gitignored)
+├── cache/ (gitignored)
+│
+├── .gitignore
+├── LICENSE
+├── README.md
+├── requirements.txt
+├── setup.py
+├── pyproject.toml
+└── docker-compose.yml
