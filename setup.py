@@ -7,14 +7,14 @@ with open("requirements.txt", "r", encoding="utf-8") as fh:
     requirements = [line.strip() for line in fh if line.strip() and not line.startswith("#")]
 
 setup(
-    name="baseball-manager-ai",
+    name="baseball_manager_ai",
     version="0.1.0",
-    author="Your Name",
-    author_email="your.email@example.com",
+    author="Sean Rugge",
+    author_email="seanrugge@gmail.com",
     description="AI-powered baseball manager assistant",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/yourusername/baseball_manager_ai",
+    url="https://github.com/seanrugg/baseball_manager_ai",
     packages=find_packages(include=["baseball_manager_ai", "baseball_manager_ai.*"]),
     classifiers=[
         "Development Status :: 3 - Alpha",
