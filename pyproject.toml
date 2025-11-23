@@ -1,0 +1,80 @@
+[build-system]
+requires = ["setuptools>=45", "wheel", "setuptools_scm"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "baseball-manager-ai"
+dynamic = ["version"]
+description = "AI-powered baseball manager assistant for lineup optimization and in-game decision making"
+authors = [
+    {name = "Your Name", email = "your.email@example.com"},
+]
+license = {file = "LICENSE"}
+readme = "README.md"
+requires-python = ">=3.8"
+keywords = ["baseball", "machine-learning", "sports-analytics", "ai", "manager", "lineup", "strategy"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "Intended Audience :: Sports",
+    "License :: OSI Approved :: Apache Software License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Games/Entertainment :: Sports",
+]
+
+dependencies = [
+    "numpy>=1.21.0",
+    "pandas>=1.3.0",
+    "scikit-learn>=1.0.0",
+    "scipy>=1.7.0",
+    "torch>=1.9.0",
+    "transformers>=4.15.0",
+    "xgboost>=1.5.0",
+    "lightgbm>=3.3.0",
+    "pybaseball>=2.2.0",
+    "fastapi>=0.68.0",
+    "uvicorn>=0.15.0",
+    "requests>=2.25.0",
+    "streamlit>=1.0.0",
+    "pyyaml>=5.4.0",
+    "tqdm>=4.62.0",
+    "joblib>=1.0.0",
+    "matplotlib>=3.5.0",
+    "seaborn>=0.11.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=6.0.0",
+    "pytest-cov>=2.0.0",
+    "black>=21.0.0",
+    "flake8>=3.9.0",
+    "mypy>=0.910",
+    "pre-commit>=2.15.0",
+]
+docs = [
+    "sphinx>=4.0.0",
+    "sphinx-rtd-theme>=1.0.0",
+]
+simulation = [
+    "pybaseball>=2.2.0",
+    "mlb-api>=1.0.0",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/yourusername/baseball_manager_ai"
+"Bug Reports" = "https://github.com/yourusername/baseball_manager_ai/issues"
+"Source" = "https://github.com/yourusername/baseball_manager_ai"
+"Documentation" = "https://github.com/yourusername/baseball_manager_ai/docs"
+
+[project.scripts]
+baseball-manager = "baseball_manager_ai.cli:main"
+
+[tool.setuptools_scm]
+write_to = "baseball_manager_ai/_version.py"
