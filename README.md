@@ -1,6 +1,3 @@
-# baseball_manager_ai
-An ai to assist coaches and managers with baseball management
-
 # Baseball Manager AI
 
 An AI-powered assistant for baseball team management, providing data-driven recommendations for lineups, in-game strategy, and player management.
