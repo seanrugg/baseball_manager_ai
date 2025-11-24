@@ -18,7 +18,7 @@ An AI-powered assistant for baseball team management, providing data-driven reco
 ```bash
 # Clone repository
 git clone https://github.com/seanrugg/baseball_manager_ai
-cd baseball-manager-ai
+cd baseball_manager_ai
 
 # Install package
 pip install -e .
