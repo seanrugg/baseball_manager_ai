@@ -1,0 +1,57 @@
+# Training Configuration for Baseball Manager AI
+
+# General Training Settings
+training:
+  random_seed: 42
+  test_size: 0.2
+  validation_size: 0.1
+  cross_validation_folds: 5
+
+# Data Settings
+data:
+  target_column: "target"
+  min_samples: 100
+  balance_classes: true
+  feature_scaling: "standard"
+
+# Hyperparameter Search
+hyperparameter_search:
+  enabled: false
+  method: "grid"  # grid, random, bayesian
+  n_iter: 50
+
+# Model Training Parameters
+lineup_optimizer:
+  model_type: "gradient_boosting"
+  n_estimators: 100
+  max_depth: 6
+  learning_rate: 0.1
+  early_stopping_rounds: 10
+
+in_game_decider:
+  model_type: "random_forest"
+  n_estimators: 200
+  max_depth: 10
+  min_samples_split: 5
+  min_samples_leaf: 2
+
+pitching_manager:
+  model_type: "xgboost"
+  n_estimators: 150
+  max_depth: 8
+  learning_rate: 0.1
+  subsample: 0.8
+  colsample_bytree: 0.8
+
+# Training Output
+output:
+  model_dir: "models"
+  save_best_only: true
+  save_format: "pickle"
+  versioning: true
+
+# Logging
+logging:
+  level: "INFO"
+  log_dir: "logs"
+  tensorboard: false

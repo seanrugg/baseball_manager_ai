@@ -1,0 +1,52 @@
+# Model Configuration for Baseball Manager AI
+
+# Lineup Optimizer Configuration
+lineup_optimizer:
+  model_type: "gradient_boosting"
+  n_estimators: 100
+  max_depth: 6
+  learning_rate: 0.1
+  features:
+    - batter_season_ops
+    - batter_vs_pitcher_hand
+    - recent_performance
+    - park_factors
+    - weather_conditions
+
+# In-Game Decision Maker Configuration
+in_game_decider:
+  model_type: "random_forest"
+  n_estimators: 200
+  max_depth: 10
+  min_samples_split: 5
+  features:
+    - inning
+    - outs
+    - score_differential
+    - base_state
+    - leverage_index
+    - win_probability
+  decision_types:
+    - steal_attempt
+    - sacrifice_bunt
+    - hit_and_run
+    - intentional_walk
+    - pitching_change
+
+# Pitching Manager Configuration
+pitching_manager:
+  model_type: "xgboost"
+  n_estimators: 150
+  max_depth: 8
+  learning_rate: 0.1
+  features:
+    - pitcher_pitch_count
+    - pitcher_era
+    - batter_matchup
+    - bullpen_availability
+    - game_situation
+
+# Ensemble Configuration
+ensemble:
+  voting: "soft"
+  weights: [0.4, 0.35, 0.25]  # lineup, in_game, pitching

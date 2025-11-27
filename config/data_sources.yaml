@@ -1,0 +1,66 @@
+# Data Sources Configuration for Baseball Manager AI
+
+# Statcast Data
+statcast:
+  enabled: true
+  source: "baseball_savant"
+  base_url: "https://baseballsavant.mlb.com/statcast"
+  rate_limit: 10  # requests per minute
+  cache_enabled: true
+  cache_duration: 86400  # 24 hours in seconds
+
+# Retrosheet Data
+retrosheet:
+  enabled: true
+  base_url: "https://www.retrosheet.org"
+  game_logs_url: "https://www.retrosheet.org/gamelogs/index.html"
+  event_files_url: "https://www.retrosheet.org/game.htm"
+
+# MLB Stats API
+mlb_stats_api:
+  enabled: true
+  base_url: "https://statsapi.mlb.com/api/v1"
+  endpoints:
+    schedule: "/schedule"
+    game: "/game/{gamePk}"
+    people: "/people/{personId}"
+    teams: "/teams"
+  rate_limit: 20
+  timeout: 30
+
+# Baseball Reference
+baseball_reference:
+  enabled: true
+  base_url: "https://www.baseball-reference.com"
+  cache_enabled: true
+  rate_limit: 5
+
+# Database Configuration (Supabase)
+database:
+  use_supabase: true
+  tables:
+    games: "games"
+    players: "players"
+    play_by_play: "play_by_play"
+    decisions: "manager_decisions"
+    simulations: "simulation_results"
+
+# Data Processing
+processing:
+  batch_size: 1000
+  validate_data: true
+  remove_duplicates: true
+  fill_missing: "mean"  # mean, median, forward_fill
+
+# Data Storage Paths
+paths:
+  raw_data: "data/raw"
+  processed_data: "data/processed"
+  external_data: "data/external"
+  cache: "cache"
+
+# Update Schedule
+update_schedule:
+  daily: true
+  auto_download: false
+  seasons: [2024]

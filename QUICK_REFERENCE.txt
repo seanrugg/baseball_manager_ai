@@ -1,0 +1,103 @@
+╔══════════════════════════════════════════════════════════════════╗
+║           BASEBALL MANAGER AI - QUICK REFERENCE                  ║
+╚══════════════════════════════════════════════════════════════════╝
+
+📦 WHAT YOU HAVE NOW
+────────────────────────────────────────────────────────────────────
+✓ Complete codebase ready to run
+✓ All configuration files (config/)
+✓ Docker setup for easy deployment
+✓ Test scripts to verify everything works
+✓ Comprehensive deployment guides
+
+🚀 FASTEST WAY TO TEST (3 commands)
+────────────────────────────────────────────────────────────────────
+pip install -r requirements.txt
+python -m baseball_manager_ai.api.model_server
+curl http://localhost:8000/health
+
+🐳 DOCKER DEPLOYMENT (2 commands)
+────────────────────────────────────────────────────────────────────
+cp .env.example .env     # Edit with your Supabase credentials
+docker-compose up -d
+
+📊 KEY FILES TO KNOW
+────────────────────────────────────────────────────────────────────
+CURRENT_STATUS.md        → Read this first!
+DEPLOYMENT_GUIDE.md      → Complete deployment instructions
+test_basic.py            → Test your setup
+quick_start.py           → Verify dependencies & create sample data
+.env.example             → Copy to .env and configure
+
+⚙️ CONFIGURATION FILES (config/)
+────────────────────────────────────────────────────────────────────
+model_config.yaml        → Model hyperparameters
+training_config.yaml     → Training settings
+simulation_config.yaml   → Simulation parameters
+data_sources.yaml        → Data source configs
+
+🎯 BEFORE YOU START
+────────────────────────────────────────────────────────────────────
+1. Get Supabase credentials (URL + keys)
+2. Copy .env.example to .env
+3. Add your Supabase credentials to .env
+4. Create database tables (see DEPLOYMENT_GUIDE.md)
+
+🧪 TESTING
+────────────────────────────────────────────────────────────────────
+python3 test_basic.py              # Test core functionality
+python3 quick_start.py             # Verify setup + create samples
+python scripts/run_simulation.py   # Test simulation engine
+
+🌐 API ENDPOINTS (after starting server)
+────────────────────────────────────────────────────────────────────
+GET  http://localhost:8000/         # API info
+GET  http://localhost:8000/health   # Health check
+POST http://localhost:8000/predict/lineup   # Lineup recommendation
+POST http://localhost:8000/predict/decision # In-game decision
+POST http://localhost:8000/predict/pitching # Pitching decision
+POST http://localhost:8000/simulate         # Run simulation
+
+📦 VPS DEPLOYMENT OPTIONS
+────────────────────────────────────────────────────────────────────
+Option 1: Docker (Recommended)
+  → docker-compose up -d
+
+Option 2: Direct Python
+  → python -m baseball_manager_ai.api.model_server
+
+Option 3: Systemd Service
+  → See DEPLOYMENT_GUIDE.md section "Systemd Service"
+
+❓ COMMON ISSUES
+────────────────────────────────────────────────────────────────────
+"Module not found"           → pip install -r requirements.txt
+"Connection refused"         → Check .env Supabase credentials
+"Port already in use"        → Change API_PORT in .env
+"No models found"            → Expected! API works without models
+
+💡 PRO TIPS
+────────────────────────────────────────────────────────────────────
+• You can test without real data (uses defaults)
+• Models are optional for testing
+• Start locally before VPS deployment
+• Use Docker to avoid dependency issues
+• Check logs/ directory for errors
+
+📚 DOCUMENTATION
+────────────────────────────────────────────────────────────────────
+CURRENT_STATUS.md        → Your current status (read first!)
+DEPLOYMENT_GUIDE.md      → Step-by-step deployment
+README.md                → Project overview
+docs/                    → Additional documentation
+
+🔗 NEXT STEPS
+────────────────────────────────────────────────────────────────────
+1. Read CURRENT_STATUS.md
+2. Set up .env file
+3. Run test_basic.py
+4. Start API server
+5. Test with curl or browser
+6. Deploy to VPS when ready
+
+Need help? Check logs/ directory or run test_basic.py

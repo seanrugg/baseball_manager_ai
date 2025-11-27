@@ -1,0 +1,66 @@
+# Simulation Configuration for Baseball Manager AI
+
+# Monte Carlo Simulation Settings
+monte_carlo:
+  default_iterations: 10000
+  confidence_level: 0.95
+  random_seed: 42
+  parallel_processing: true
+  n_jobs: -1  # Use all available cores
+
+# Game Simulation Settings
+game_simulation:
+  innings: 9
+  enable_extra_innings: true
+  max_extra_innings: 12
+
+# Park Factors (runs per game multiplier)
+park_factors:
+  default: 1.0
+  "Coors Field": 1.20
+  "Fenway Park": 1.08
+  "Yankee Stadium": 1.08
+  "Oracle Park": 0.88
+  "Dodger Stadium": 0.94
+  "Rogers Centre": 0.98
+  "Comerica Park": 0.94
+
+# Weather Impact
+weather:
+  temperature_effect: true
+  wind_effect: true
+  precipitation_effect: true
+  temperature_baseline: 72.0  # degrees F
+
+# Base Probabilities (MLB averages)
+base_probabilities:
+  strikeout_rate: 0.215
+  walk_rate: 0.085
+  hit_rate: 0.246
+  home_run_rate: 0.030
+  single_rate: 0.160
+  double_rate: 0.050
+  triple_rate: 0.005
+
+# Run Expectancy Matrix (standard RE24)
+run_expectancy:
+  use_historical: true
+  matrix_file: "data/processed/re24_matrix.csv"
+
+# Win Probability
+win_probability:
+  use_historical: true
+  granularity: "inning"  # inning, half_inning, play
+
+# Decision Evaluation
+decision_evaluation:
+  wpa_threshold: 0.02  # Minimum WPA to consider significant
+  track_decisions: true
+  output_dir: "results/decisions"
+
+# Output Settings
+output:
+  save_game_logs: true
+  save_decisions: true
+  results_dir: "results"
+  format: "json"  # json, csv, both
