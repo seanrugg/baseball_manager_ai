@@ -1,0 +1,43 @@
+database:
+  driver: postgresql
+  pool_size: 10
+  pool_pre_ping: true
+  echo_pool: false
+
+tables:
+  games:
+    name: games
+    description: Baseball games and results
+
+  players:
+    name: players
+    description: Player statistics and information
+
+  play_by_play:
+    name: play_by_play
+    description: Detailed play-by-play game events
+
+  manager_decisions:
+    name: manager_decisions
+    description: Manager decisions and their outcomes
+
+  simulation_results:
+    name: simulation_results
+    description: Results from game simulations
+
+  team_stats:
+    name: team_stats
+    description: Team statistics and performance metrics
+
+indexes:
+  - table: games
+    columns: [date, home_team, away_team]
+
+  - table: players
+    columns: [team, position]
+
+  - table: manager_decisions
+    columns: [game_id, inning]
+
+  - table: simulation_results
+    columns: [home_team, away_team, created_at]

@@ -1,0 +1,175 @@
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                      BASEBALL MANAGER AI - QUICK START                       ║
+║                                                                               ║
+║                   PostgreSQL Self-Hosted Deployment                          ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+⚡ FASTEST DEPLOYMENT (5 MINUTES)
+
+  1. Copy config
+     cp .env.example .env
+
+  2. Edit password
+     nano .env        [Change DB_PASSWORD]
+
+  3. Start containers
+     docker-compose up -d
+
+  4. Initialize database
+     docker-compose exec api python init_db.py
+
+  5. Test it
+     curl http://localhost:8000/health
+
+✓ Done! API is running with PostgreSQL.
+
+─────────────────────────────────────────────────────────────────────────────────
+
+📚 DOCUMENTATION MAP
+
+  START_HERE.md               ← Read this first (5 min overview)
+  SETUP_SUMMARY.md            ← Quick setup guide (includes options)
+  SELF_HOSTED_SETUP.md        ← Database management & troubleshooting
+  VPS_DEPLOYMENT.md           ← Complete VPS + domain setup
+  DEPLOYMENT_CHECKLIST.md     ← Step-by-step verification
+  CONVERSION_SUMMARY.md       ← What changed from Supabase
+
+─────────────────────────────────────────────────────────────────────────────────
+
+🔧 ESSENTIAL COMMANDS
+
+  # Start/Stop
+  docker-compose up -d
+  docker-compose down
+
+  # Status & Logs
+  docker-compose ps
+  docker-compose logs -f api
+  docker-compose logs -f postgres
+
+  # Database
+  docker-compose exec postgres psql -U baseball_user -d baseball_db
+
+  # Backup
+  docker-compose exec postgres pg_dump -U baseball_user baseball_db > backup.sql
+
+  # Health check
+  curl http://localhost:8000/health
+
+─────────────────────────────────────────────────────────────────────────────────
+
+🚀 THREE DEPLOYMENT OPTIONS
+
+  Option A: Docker Locally      [5 min]   ← Start here
+  Option B: Python Locally      [15 min]  ← For development
+  Option C: VPS + Domain        [1 hour]  ← For production
+
+─────────────────────────────────────────────────────────────────────────────────
+
+📦 WHAT YOU GET
+
+  Database Tables:
+  ✓ games                 - Game results
+  ✓ players               - Player stats
+  ✓ play_by_play          - Game events
+  ✓ manager_decisions     - Decision history
+  ✓ simulation_results    - Simulation data
+  ✓ team_stats            - Team statistics
+
+  API Endpoints:
+  ✓ GET  /health          - Health check
+  ✓ POST /predict         - Game prediction
+  ✓ POST /recommend       - Player recommendations
+  ✓ POST /strategy        - Strategy optimization
+  ✓ GET  /models          - List models
+
+─────────────────────────────────────────────────────────────────────────────────
+
+❓ TROUBLESHOOTING
+
+  Container won't start?
+    docker-compose logs api
+
+  Can't connect to database?
+    docker-compose logs postgres
+
+  Port already in use?
+    Change API_PORT in .env to 8001
+
+  Full guide:
+    See SELF_HOSTED_SETUP.md troubleshooting section
+
+─────────────────────────────────────────────────────────────────────────────────
+
+✅ VERIFICATION CHECKLIST
+
+  After "docker-compose up -d":
+  □ docker-compose ps shows both containers "Up"
+  □ docker-compose exec api python init_db.py completes
+  □ curl http://localhost:8000/health returns "connected"
+  □ Can run: docker-compose exec postgres psql -U baseball_user -d baseball_db
+
+─────────────────────────────────────────────────────────────────────────────────
+
+🎯 NEXT STEPS (After Quick Start)
+
+  For Testing:
+  1. Keep running locally
+  2. Download baseball data (optional)
+  3. Train models (optional)
+  4. Run simulations
+
+  For Production:
+  1. Read VPS_DEPLOYMENT.md
+  2. Deploy to your VPS
+  3. Configure domain + Nginx
+  4. Get SSL certificate (Let's Encrypt)
+  5. Set up automated backups
+
+─────────────────────────────────────────────────────────────────────────────────
+
+🔐 SECURITY
+
+  □ Change DB_PASSWORD in .env to strong password
+  □ Don't commit .env to version control
+  □ chmod 600 .env (restrict permissions)
+  □ Enable firewall on VPS
+  □ Use HTTPS in production
+
+─────────────────────────────────────────────────────────────────────────────────
+
+📞 NEED HELP?
+
+  1. Check logs:        docker-compose logs -f
+  2. Read docs:         START_HERE.md
+  3. Run test script:    docker-compose exec api python test_basic.py
+  4. Check checklist:    DEPLOYMENT_CHECKLIST.md
+
+─────────────────────────────────────────────────────────────────────────────────
+
+🎓 WHAT'S DIFFERENT
+
+  Before:   Supabase (cloud database, monthly cost)
+  Now:      PostgreSQL (your database, full control)
+
+  Benefits:
+  ✓ Full control over data
+  ✓ No SaaS fees
+  ✓ Your own VPS
+  ✓ Custom domain
+  ✓ Easy backups
+  ✓ Complete ownership
+
+─────────────────────────────────────────────────────────────────────────────────
+
+                              READY? START WITH:
+
+                                cp .env.example .env
+                                nano .env
+                                docker-compose up -d
+                              docker-compose exec api python init_db.py
+                              curl http://localhost:8000/health
+
+                           Full setup: Read START_HERE.md
+
+─────────────────────────────────────────────────────────────────────────────────

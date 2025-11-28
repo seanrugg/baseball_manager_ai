@@ -11,14 +11,20 @@ Provides REST endpoints for:
 import logging
 import json
 import asyncio
+import os
 from typing import Dict, List, Any, Optional
 from datetime import datetime
 import pandas as pd
-from fastapi import FastAPI, HTTPException, BackgroundTasks, Query
+from fastapi import FastAPI, HTTPException, BackgroundTasks, Query, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
+from sqlalchemy.orm import Session
 import uvicorn
+from dotenv import load_dotenv
 
+from baseball_manager_ai.database import get_db, init_db
+
+load_dotenv()
 logger = logging.getLogger(__name__)
 
 # Request/Response models
@@ -120,12 +126,20 @@ class ModelServer:
             }
         
         @self.app.get("/health")
-        async def health_check():
+        async def health_check(db: Session = Depends(get_db)):
             """Health check endpoint."""
+            try:
+                db.execute("SELECT 1")
+                db_status = "connected"
+            except Exception as e:
+                logger.error(f"Database connection error: {e}")
+                db_status = "disconnected"
+
             return {
                 "status": "healthy",
                 "timestamp": datetime.now(),
-                "models_loaded": len(self.model_registry)
+                "models_loaded": len(self.model_registry),
+                "database": db_status
             }
         
         @self.app.post("/predict", response_model=PredictionResponse)
@@ -276,6 +290,7 @@ class ModelServer:
     
     def run(self, reload: bool = False):
         """Run the model server."""
+        init_db()
         uvicorn.run(
             self.app,
             host=self.host,
@@ -286,5 +301,7 @@ class ModelServer:
 
 
 if __name__ == "__main__":
-    server = ModelServer()
+    host = os.getenv("API_HOST", "0.0.0.0")
+    port = int(os.getenv("API_PORT", 8000))
+    server = ModelServer(host=host, port=port)
     server.run()

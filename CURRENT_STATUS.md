@@ -23,9 +23,10 @@ Your Baseball Manager AI application is **ready for initial testing and deployme
 
 ### Deployment Files
 - ✓ `Dockerfile` - Container definition
-- ✓ `docker-compose.yml` - Orchestration
-- ✓ `requirements.txt` - Python dependencies
+- ✓ `docker-compose.yml` - Orchestration with PostgreSQL
+- ✓ `requirements.txt` - Python dependencies (includes PostgreSQL)
 - ✓ `setup.py` - Package installation
+- ✓ Database models and ORM (`baseball_manager_ai/database/`)
 
 ### Documentation & Scripts
 - ✓ Training script (`scripts/train_model.py`)
@@ -33,8 +34,10 @@ Your Baseball Manager AI application is **ready for initial testing and deployme
 - ✓ Simulation runner (`scripts/run_simulation.py`)
 - ✓ Deployment script (`scripts/deploy_model.py`)
 - ✓ Quick start helper (`quick_start.py`)
+- ✓ Database initialization (`init_db.py`)
 - ✓ Basic test suite (`test_basic.py`)
-- ✓ Comprehensive deployment guide
+- ✓ VPS deployment guide with PostgreSQL
+- ✓ Self-hosted setup guide
 
 ## 📋 Immediate Next Steps (Choose Your Path)
 

@@ -1,6 +1,26 @@
 version: '3.8'
 
 services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: baseball-postgres
+    environment:
+      POSTGRES_USER: ${DB_USER:-baseball_user}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-baseball_password}
+      POSTGRES_DB: ${DB_NAME:-baseball_db}
+    ports:
+      - "${DB_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-baseball_user}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+    networks:
+      - baseball-network
+
   api:
     build:
       context: .
@@ -9,21 +29,27 @@ services:
     ports:
       - "${API_PORT:-8000}:8000"
     environment:
-      - SUPABASE_URL=${SUPABASE_URL}
-      - SUPABASE_ANON_KEY=${SUPABASE_ANON_KEY}
-      - SUPABASE_SERVICE_ROLE_KEY=${SUPABASE_SERVICE_ROLE_KEY}
+      - DATABASE_URL=postgresql://${DB_USER:-baseball_user}:${DB_PASSWORD:-baseball_password}@postgres:5432/${DB_NAME:-baseball_db}
       - API_HOST=0.0.0.0
       - API_PORT=8000
       - LOG_LEVEL=${LOG_LEVEL:-INFO}
+      - ENVIRONMENT=${ENVIRONMENT:-development}
     volumes:
       - ./logs:/app/logs
       - ./cache:/app/cache
       - ./models:/app/models
       - ./data:/app/data
       - ./results:/app/results
+    depends_on:
+      postgres:
+        condition: service_healthy
     restart: unless-stopped
     networks:
       - baseball-network
+
+volumes:
+  postgres_data:
+    driver: local
 
 networks:
   baseball-network:
