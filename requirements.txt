@@ -22,7 +22,7 @@ requests>=2.25.0
 streamlit>=1.0.0
 
 # Database
-psycopg2-binary>=2.9.0
+PyMySQL>=1.0.0
 sqlalchemy>=1.4.0
 alembic>=1.8.0
 

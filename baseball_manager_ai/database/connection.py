@@ -16,7 +16,7 @@ class DatabaseConnection:
     def _initialize(self):
         database_url = os.getenv(
             'DATABASE_URL',
-            'postgresql://baseball_user:baseball_password@localhost:5432/baseball_db'
+            'mysql+pymysql://baseball_user:baseball_password@localhost:3306/baseball_db'
         )
 
         self.engine = create_engine(
