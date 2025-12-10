@@ -1,65 +1,75 @@
-# Baseball Manager AI - VPS Deployment Guide
+# Baseball Manager AI - Plesk Deployment Guide
 
-This guide covers deploying Baseball Manager AI to your personal VPS with PostgreSQL database.
+This guide covers deploying Baseball Manager AI to Plesk with direct GitHub integration and MariaDB database.
 
 ## Prerequisites
 
-- Ubuntu 20.04+ VPS with root or sudo access
-- Domain name (optional, for production)
-- 2GB+ RAM recommended
-- Docker & Docker Compose (or native Python setup)
+- Plesk-managed VPS with root/admin access
+- GitHub repository with your code
+- MariaDB 10.11.13 database already running
+- Subdomain configured in Plesk
+- Python 3.8+ available on the server
 
-## Quick Start (Docker) - Recommended
+## Deployment Steps
 
-### 1. SSH into your VPS
+### 1. Create Subdomain in Plesk
+
+1. Log in to Plesk Dashboard
+2. Go to **Domains** → **Your Main Domain**
+3. Click **Subdomains**
+4. Create new subdomain (e.g., `api.yourdomain.com`)
+5. Set document root to a directory like `/home/yourusername/public_html/api`
+6. Note the document root path
+
+### 2. Configure GitHub Deployment
+
+#### Option A: Using Plesk Git Integration (Recommended)
+
+1. In Plesk, go to **Git repositories**
+2. Click **Add Git Repository**
+3. Select your GitHub repository
+4. Set branch to `main` (or your default branch)
+5. Set deployment path to your subdomain's document root
+6. Configure webhooks for automatic deployment on push
+
+#### Option B: Manual Git Pull (Command Line)
 
 ```bash
-ssh root@your-vps-ip
+cd /home/yourusername/public_html/api
+git clone https://github.com/yourusername/baseball-manager-ai.git .
 ```
 
-### 2. Install Docker and Docker Compose
+### 3. Install Python Dependencies
 
 ```bash
-curl -fsSL https://get.docker.com -o get-docker.sh
-sudo sh get-docker.sh
-sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-sudo chmod +x /usr/local/bin/docker-compose
+cd /home/yourusername/public_html/api
 
-# Verify installation
-docker --version
-docker-compose --version
+# Create virtual environment
+python3 -m venv venv
+source venv/bin/activate
+
+# Install dependencies
+pip install --upgrade pip
+pip install -r requirements.txt
 ```
 
-### 3. Clone or Upload Your Project
+### 4. Configure Environment Variables
 
 ```bash
-# Option A: Clone from git (if you have a repo)
-git clone https://github.com/yourusername/baseball-manager-ai.git
-cd baseball-manager-ai
-
-# Option B: Upload using scp from your local machine
-# On your local machine:
-scp -r /path/to/baseball-manager-ai root@your-vps-ip:/opt/
-```
-
-### 4. Configure Environment
-
-```bash
-cd /opt/baseball-manager-ai
 cp .env.example .env
 nano .env
 ```
 
-Update these values in `.env`:
+Update `.env` with your MariaDB credentials:
 
 ```
-# Database Configuration
-DATABASE_URL=postgresql://baseball_user:baseball_password@postgres:5432/baseball_db
-DB_USER=baseball_user
-DB_PASSWORD=your_secure_password_here
-DB_NAME=baseball_db
-DB_HOST=postgres
-DB_PORT=5432
+# Database Configuration (MariaDB)
+DATABASE_URL=mysql+pymysql://your_db_user:your_db_password@localhost:3306/your_db_name
+DB_USER=your_db_user
+DB_PASSWORD=your_db_password
+DB_NAME=your_db_name
+DB_HOST=localhost
+DB_PORT=3306
 
 # API Configuration
 API_HOST=0.0.0.0
@@ -70,315 +80,292 @@ ENVIRONMENT=production
 LOG_LEVEL=INFO
 ```
 
-### 5. Deploy with Docker Compose
+### 5. Initialize Database
 
 ```bash
-# Build and start containers
-docker-compose up -d
+cd /home/yourusername/public_html/api
+source venv/bin/activate
 
-# Check status
-docker-compose ps
-
-# View logs
-docker-compose logs -f api
-
-# Check database connection
-docker-compose logs postgres
+# Create tables in MariaDB
+python -c "from baseball_manager_ai.database.connection import init_db; init_db()"
 ```
 
-### 6. Verify Deployment
+### 6. Configure Plesk Application Server
+
+#### For Python/FastAPI via Plesk:
+
+1. In Plesk, go to your subdomain
+2. Click **Python Handler** or **Application Server**
+3. If using Python application:
+   - Select Python version (3.8+)
+   - Set entry point to your WSGI application
+
+#### Alternative: Use Gunicorn with Systemd
+
+Install Gunicorn:
 
 ```bash
-# Test health endpoint
-curl http://localhost:8000/health
-
-# Should return:
-# {"status":"healthy","timestamp":"...","models_loaded":0,"database":"connected"}
+source venv/bin/activate
+pip install gunicorn
 ```
 
-## Setup Nginx Reverse Proxy
+Create systemd service file `/etc/systemd/system/baseball-api.service`:
 
-For production with your domain:
+```ini
+[Unit]
+Description=Baseball Manager AI API
+After=network.target
 
-### 1. Install Nginx
+[Service]
+User=yourusername
+WorkingDirectory=/home/yourusername/public_html/api
+Environment="PATH=/home/yourusername/public_html/api/venv/bin"
+ExecStart=/home/yourusername/public_html/api/venv/bin/gunicorn \
+    --workers 4 \
+    --worker-class uvicorn.workers.UvicornWorker \
+    --bind 127.0.0.1:8000 \
+    baseball_manager_ai.api.model_server:app
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
+```
+
+Start the service:
 
 ```bash
-sudo apt update
-sudo apt install nginx
+sudo systemctl daemon-reload
+sudo systemctl start baseball-api
+sudo systemctl enable baseball-api
 ```
 
-### 2. Create Nginx Configuration
+### 7. Configure Plesk Proxy
+
+In Plesk for your subdomain:
+
+1. Go to **Proxy** or **Reverse Proxy**
+2. Create a new proxy rule:
+   - From: `/`
+   - To: `http://127.0.0.1:8000`
+
+### 8. Verify Deployment
 
 ```bash
-sudo nano /etc/nginx/sites-available/baseball-manager
+# Check if API is running
+curl http://your-subdomain.yourdomain.com/health
+
+# Check service status (if using systemd)
+sudo systemctl status baseball-api
 ```
 
-Add this configuration:
+## Database Management (MariaDB)
 
-```nginx
-upstream baseball_api {
-    server localhost:8000;
-}
-
-server {
-    listen 80;
-    server_name your-domain.com www.your-domain.com;
-
-    client_max_body_size 10M;
-
-    location / {
-        proxy_pass http://baseball_api;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-        proxy_redirect off;
-
-        # WebSocket support (if needed)
-        proxy_http_version 1.1;
-        proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection "upgrade";
-    }
-}
-```
-
-### 3. Enable Site
+### Connect to MariaDB
 
 ```bash
-sudo ln -s /etc/nginx/sites-available/baseball-manager /etc/nginx/sites-enabled/
-sudo rm /etc/nginx/sites-enabled/default
-sudo nginx -t
-sudo systemctl start nginx
-sudo systemctl enable nginx
+mysql -u your_db_user -p your_db_name
 ```
-
-## Setup SSL Certificate (Let's Encrypt)
-
-```bash
-sudo apt install certbot python3-certbot-nginx
-sudo certbot --nginx -d your-domain.com -d www.your-domain.com
-```
-
-## Database Backup and Restore
 
 ### Backup Database
 
 ```bash
-docker-compose exec postgres pg_dump -U baseball_user baseball_db > backup.sql
+mysqldump -u your_db_user -p your_db_name > backup_$(date +%Y%m%d_%H%M%S).sql
 ```
 
 ### Restore Database
 
 ```bash
-docker-compose exec -T postgres psql -U baseball_user baseball_db < backup.sql
+mysql -u your_db_user -p your_db_name < backup.sql
 ```
 
 ### Automated Daily Backups
 
-Create `/opt/baseball-manager-ai/backup.sh`:
+Create `/home/yourusername/backup_mariadb.sh`:
 
 ```bash
 #!/bin/bash
 DATE=$(date +%Y%m%d_%H%M%S)
-BACKUP_DIR="/opt/baseball-manager-ai/backups"
+BACKUP_DIR="/home/yourusername/backups"
 mkdir -p $BACKUP_DIR
 
-docker-compose exec -T postgres pg_dump -U baseball_user baseball_db | gzip > $BACKUP_DIR/backup_$DATE.sql.gz
+mysqldump -u your_db_user -p'your_password' your_db_name | gzip > $BACKUP_DIR/backup_$DATE.sql.gz
 
 # Keep only last 7 days of backups
 find $BACKUP_DIR -name "backup_*.sql.gz" -mtime +7 -delete
 ```
 
-Add to crontab:
+Make executable and add to crontab:
 
 ```bash
+chmod +x /home/yourusername/backup_mariadb.sh
 crontab -e
-# Add this line:
-0 2 * * * /opt/baseball-manager-ai/backup.sh
+# Add: 0 2 * * * /home/yourusername/backup_mariadb.sh
 ```
 
-## Database Management
-
-### Connect to PostgreSQL
+### Query MariaDB
 
 ```bash
-docker-compose exec postgres psql -U baseball_user -d baseball_db
+# List tables
+mysql -u your_db_user -p your_db_name -e "SHOW TABLES;"
+
+# View table structure
+mysql -u your_db_user -p your_db_name -e "DESCRIBE games;"
+
+# Check database size
+mysql -u your_db_user -p your_db_name -e "SELECT table_schema, SUM(data_length + index_length)/1024/1024 AS size_mb FROM information_schema.tables GROUP BY table_schema;"
 ```
 
-### Create Database Backups
+## Continuous Deployment from GitHub
 
-```bash
-# List all tables
-\dt
+### Auto-Deployment on Push
 
-# View table schema
-\d tablename
+#### Using Plesk Git Integration:
 
-# Exit
-\q
+1. In Plesk dashboard, configure webhook from GitHub
+2. Plesk will auto-pull on commits to selected branch
+
+#### Manual Webhook Handler:
+
+Create `/home/yourusername/public_html/api/deploy.php`:
+
+```php
+<?php
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $payload = json_decode(file_get_contents('php://input'), true);
+
+    if ($payload['ref'] === 'refs/heads/main') {
+        chdir('/home/yourusername/public_html/api');
+        shell_exec('git pull origin main');
+        shell_exec('source venv/bin/activate && pip install -r requirements.txt');
+        // Restart API if needed
+        shell_exec('sudo systemctl restart baseball-api');
+    }
+    http_response_code(200);
+}
+?>
 ```
 
-### Create New Tables
+Configure GitHub webhook to send push events to: `https://your-subdomain.yourdomain.com/deploy.php`
 
-Inside the container:
+## Performance & Monitoring
+
+### Check Application Logs
 
 ```bash
-docker-compose exec postgres psql -U baseball_user -d baseball_db -c "
-CREATE TABLE IF NOT EXISTS your_table (
-    id SERIAL PRIMARY KEY,
-    created_at TIMESTAMP DEFAULT NOW()
-);
-"
+# If using systemd
+sudo journalctl -u baseball-api -f
+
+# Or check Plesk logs
+tail -f /var/log/plesk/apache2ssl_error_log
 ```
 
-## Monitoring and Logs
-
-### View Application Logs
+### Monitor Database Performance
 
 ```bash
-# Last 100 lines
-docker-compose logs --tail=100 api
-
-# Follow logs in real-time
-docker-compose logs -f api
-
-# All services
-docker-compose logs -f
+mysql -u your_db_user -p -e "SHOW STATUS LIKE 'Threads%';"
+mysql -u your_db_user -p -e "SHOW FULL PROCESSLIST;"
 ```
 
-### Check Container Status
+### Enable Query Logging (MariaDB)
 
 ```bash
-docker-compose ps
-docker stats
-```
-
-### View Database Logs
-
-```bash
-docker-compose logs postgres
+mysql -u root -p -e "SET GLOBAL general_log = 'ON';"
 ```
 
 ## Troubleshooting
 
-### Container won't start
+### API Not Responding
 
 ```bash
-docker-compose logs api
-docker-compose logs postgres
+# Check if service is running
+sudo systemctl status baseball-api
 
-# Rebuild containers
-docker-compose build --no-cache
-docker-compose up -d
+# Check for port conflicts
+sudo netstat -tlnp | grep 8000
+
+# View logs
+sudo journalctl -u baseball-api -n 50
 ```
 
-### Database connection errors
+### Database Connection Errors
 
 ```bash
-# Check if database is ready
-docker-compose exec postgres pg_isready -U baseball_user
+# Verify MariaDB is running
+sudo systemctl status mariadb
 
-# Check database size
-docker-compose exec postgres psql -U baseball_user -d baseball_db -c "
-SELECT pg_size_pretty(pg_database_size('baseball_db'));
-"
+# Test connection
+mysql -u your_db_user -p your_db_name -e "SELECT 1;"
+
+# Check DATABASE_URL in .env
+cat /home/yourusername/public_html/api/.env | grep DATABASE_URL
 ```
 
-### Port already in use
-
-Change in `.env`:
-
-```
-API_PORT=8001
-DB_PORT=5433
-```
-
-And update Nginx configuration.
-
-### Disk space issues
+### Git Pull Fails
 
 ```bash
-# Check disk usage
-df -h
+cd /home/yourusername/public_html/api
 
-# Clean up Docker
-docker system prune
+# Check git status
+git status
 
-# Check database size
-docker-compose exec postgres psql -U baseball_user -d baseball_db -c "SELECT * FROM pg_stat_user_tables;"
+# Reset to remote state if needed
+git reset --hard origin/main
+
+# Verify credentials (use SSH keys or token)
+git remote -v
 ```
 
-## Performance Optimization
-
-### Increase Database Pool Size
-
-Edit `.env`:
-
-```
-DATABASE_POOL_SIZE=20
-```
-
-### Enable Query Caching
-
-In application code (already configured in model_server.py):
-
-```python
-# Cache predictions in memory
-self.prediction_cache = {}
-```
-
-### Database Indexing
-
-The application automatically creates indexes on frequently queried columns. To add custom indexes:
+### Permission Errors
 
 ```bash
-docker-compose exec postgres psql -U baseball_user -d baseball_db -c "
-CREATE INDEX idx_games_date ON games(date);
-CREATE INDEX idx_decisions_game ON manager_decisions(game_id);
-"
+# Fix directory permissions
+sudo chown -R yourusername:yourusername /home/yourusername/public_html/api
+
+# Make venv accessible
+chmod -R 755 venv/
 ```
 
-## Scaling for Production
+## SSL Configuration
 
-### Multiple Workers
+Plesk typically handles SSL automatically via Let's Encrypt. To manually configure:
 
-Update docker-compose.yml:
+1. In Plesk, go to your subdomain
+2. Click **SSL/TLS Certificates**
+3. Select or create Let's Encrypt certificate
+4. Plesk auto-renews 30 days before expiration
 
-```yaml
-api:
-  # ... existing config
-  deploy:
-    replicas: 3
-```
+## Maintenance Schedule
 
-### Load Balancing
+### Daily
+- Monitor logs for errors
+- Check disk space: `df -h`
 
-Update Nginx upstream:
+### Weekly
+- Backup database manually
+- Review error logs
+- Check MariaDB performance
 
-```nginx
-upstream baseball_api {
-    server localhost:8000;
-    server localhost:8001;
-    server localhost:8002;
-}
-```
+### Monthly
+- Update system packages: `sudo apt update && sudo apt upgrade`
+- Test disaster recovery
+- Review database indexing
 
-## Updating Application
+## Production Checklist
 
-### Pull latest changes
-
-```bash
-cd /opt/baseball-manager-ai
-git pull origin main  # if using git
-```
-
-### Rebuild and restart
-
-```bash
-docker-compose down
-docker-compose build
-docker-compose up -d
-```
+- [ ] GitHub repository connected
+- [ ] MariaDB database created and accessible
+- [ ] Environment variables configured in .env
+- [ ] Python dependencies installed
+- [ ] Database tables initialized
+- [ ] API service running and responding
+- [ ] SSL certificate installed
+- [ ] Automatic backups configured
+- [ ] Plesk proxy rules working
+- [ ] GitHub webhooks configured for auto-deployment
+- [ ] Error logging monitored
+- [ ] Database credentials secured (not in git)
+- [ ] Health endpoint returning success
 
 ## Firewall Configuration
 
