@@ -94,10 +94,14 @@ class ModelServer:
             version="1.0.0"
         )
         
-        # Add CORS middleware
+        # Add CORS middleware.
+        # Tightened to the concrete frontend origin for production.
+        # NOTE: allow_origins=["*"] is incompatible with
+        # allow_credentials=True per the CORS spec, so browsers reject it.
+        frontend_url = os.getenv("FRONTEND_URL", "https://baseballai.cucorn.com")
         self.app.add_middleware(
             CORSMiddleware,
-            allow_origins=["*"],
+            allow_origins=[frontend_url],
             allow_credentials=True,
             allow_methods=["*"],
             allow_headers=["*"],
