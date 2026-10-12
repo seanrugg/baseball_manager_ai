@@ -17,9 +17,6 @@ from baseball_manager_ai.utils import *
 
 # Core exports
 __all__ = [
-    "LineupOptimizer",
-    "InGameDecider", 
-    "PitchingManager",
     "GameSimulator",
     "WinProbability",
     "RunExpectancy",

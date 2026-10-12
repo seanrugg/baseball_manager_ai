@@ -1,4 +1,9 @@
-from .connection import DatabaseConnection, get_db
+from .connection import (
+    DatabaseConnection,
+    get_db,
+    get_db_connection,
+    init_db,
+)
 from .models import (
     Game,
     Player,
@@ -11,6 +16,8 @@ from .models import (
 __all__ = [
     'DatabaseConnection',
     'get_db',
+    'get_db_connection',
+    'init_db',
     'Game',
     'Player',
     'PlayByPlay',

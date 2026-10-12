@@ -56,7 +56,9 @@ class DataIngestionAPI:
     API for ingesting baseball data from various sources.
     """
     
-    def __init__(self, db_path: str = "data/baseball.db"):
+    def __init__(self, db_path: Optional[str] = None):
+        if db_path is None:
+            db_path = os.getenv("INGESTION_DB_PATH", "data/baseball.db")
         self.app = FastAPI(
             title="Baseball Data Ingestion API",
             description="API for collecting and processing baseball data",

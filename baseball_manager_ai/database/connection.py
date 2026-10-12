@@ -1,5 +1,5 @@
 import os
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker, Session
 from sqlalchemy.pool import QueuePool
 import logging
@@ -14,10 +14,12 @@ class DatabaseConnection:
         self._initialize()
 
     def _initialize(self):
-        database_url = os.getenv(
-            'DATABASE_URL',
-            'mysql+pymysql://baseball_user:baseball_password@localhost:3306/baseball_db'
-        )
+        database_url = os.getenv('DATABASE_URL')
+        if not database_url:
+            raise RuntimeError(
+                "DATABASE_URL is not set. Copy .env.example to .env and set DATABASE_URL "
+                "(e.g. postgresql://user:password@localhost:5432/baseball_db)."
+            )
 
         self.engine = create_engine(
             database_url,
@@ -47,7 +49,7 @@ class DatabaseConnection:
     def test_connection(self) -> bool:
         try:
             with self.engine.connect() as connection:
-                connection.execute("SELECT 1")
+                connection.execute(text("SELECT 1"))
                 logger.info("Database connection test successful")
                 return True
         except Exception as e:

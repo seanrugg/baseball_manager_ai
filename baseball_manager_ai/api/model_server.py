@@ -19,6 +19,7 @@ from fastapi import FastAPI, HTTPException, BackgroundTasks, Query, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
+from sqlalchemy import text
 import uvicorn
 from dotenv import load_dotenv
 
@@ -129,7 +130,7 @@ class ModelServer:
         async def health_check(db: Session = Depends(get_db)):
             """Health check endpoint."""
             try:
-                db.execute("SELECT 1")
+                db.execute(text("SELECT 1"))
                 db_status = "connected"
             except Exception as e:
                 logger.error(f"Database connection error: {e}")
